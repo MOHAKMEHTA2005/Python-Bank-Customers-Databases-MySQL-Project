@@ -1,0 +1,8 @@
+A Bank's Customer Database System which inputs, edits, records and delete details of the bank customers, with the help of connection of Python and MySQL,
+Remember:
+1. You must have the latest version of python installed.
+2. You must have the latest version of pip installed.
+3. You must have the latest version of MySQL installed and set-up.
+4. You must have the latest version of mysql, mysql-connector-python and mysqlclient packages installed in the python interpreter (I have used PyCharm for this project).
+5. Here, in the code, the default password for the database server is "passwd", the default database name is "Bank_Customers_Database" and default table name is "Customers", you may change the names according to your needs and make sure to make database and table inside it before running the code.
+6. Screenshots for help will be updated soon, Stay Tuned.
