@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Bank | Customer Database System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">A</div>
+                <h2>Aura<span>Bank</span></h2>
+            </div>
+            <nav class="sidebar-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="customers">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Customers</span>
+                </button>
+                <button class="nav-item" data-tab="add-customer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="16" y1="11" x2="22" y2="11"></line></svg>
+                    <span>Create Account</span>
+                </button>
+                <button class="nav-item" data-tab="statement">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Reports & Statements</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>DB Configuration</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <span class="status-indicator online pulse" id="status-dot"></span>
+                    <span class="status-text" id="status-db-text">SQLite Active</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="page-title">
+                    <h1 id="current-view-title">Dashboard</h1>
+                    <p id="current-view-desc">Overview of your bank customer databases.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="profile-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div class="profile-info">
+                        <span class="name">Mohak Mehta</span>
+                        <span class="role">Database Admin</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Views Container -->
+            <div class="views-wrapper">
+                
+                <!-- 1. DASHBOARD VIEW -->
+                <section id="view-dashboard" class="tab-view active">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card card-gradient-1">
+                            <div class="stat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="stat-details">
+                                <h3>Total Customers</h3>
+                                <h2 id="stat-total-customers">0</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card card-gradient-2">
+                            <div class="stat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div class="stat-details">
+                                <h3>Total Deposit Balance</h3>
+                                <h2 id="stat-total-balance">₹0.00</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card card-gradient-3">
+                            <div class="stat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            </div>
+                            <div class="stat-details">
+                                <h3>Average Balance</h3>
+                                <h2 id="stat-avg-balance">₹0.00</h2>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts and Table Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Chart Widget -->
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h2>Account Distribution</h2>
+                            </div>
+                            <div class="card-body chart-body">
+                                <div class="chart-container">
+                                    <canvas id="distribution-chart"></canvas>
+                                </div>
+                                <div id="no-chart-data" class="hidden-element">
+                                    <p>No customer records found to display charts.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity Widget -->
+                        <div class="card recent-card">
+                            <div class="card-header">
+                                <h2>Recent Registrations</h2>
+                                <button class="btn btn-text" onclick="switchTab('customers')">View All</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="recent-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Account No</th>
+                                                <th>Customer</th>
+                                                <th>Type</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 2. CUSTOMERS VIEW -->
+                <section id="view-customers" class="tab-view">
+                    <div class="card">
+                        <!-- Filters Header -->
+                        <div class="table-filters">
+                            <div class="search-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-input" placeholder="Search by Account No or Name...">
+                            </div>
+                            <div class="filter-group">
+                                <select id="filter-type">
+                                    <option value="All">All Account Types</option>
+                                    <option value="Saving">Saving</option>
+                                    <option value="Current">Current</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Fixed Deposit">Fixed Deposit</option>
+                                    <option value="Demat">Demat</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Directory Table -->
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="customers-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Account No</th>
+                                            <th>Customer Name</th>
+                                            <th>Account Type</th>
+                                            <th>Contact Phone</th>
+                                            <th>Balance</th>
+                                            <th style="text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 3. ADD CUSTOMER VIEW -->
+                <section id="view-add-customer" class="tab-view">
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h2>New Account Registration Form</h2>
+                            <p>Enter the customer's personal details, documents and initial deposit balance.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="customer-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="reg-accno">Account Number</label>
+                                        <div class="input-with-button">
+                                            <input type="text" id="reg-accno" required placeholder="e.g. 100021">
+                                            <button type="button" class="btn btn-secondary" id="btn-generate-acc">Auto</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-cname">Customer Full Name</label>
+                                        <input type="text" id="reg-cname" required placeholder="e.g. Jane Doe">
+                                    </div>
+                                    <div class="form-group grid-span-2">
+                                        <label for="reg-addr">Residential Address</label>
+                                        <input type="text" id="reg-addr" required placeholder="e.g. Sector-14, Model Town, Delhi">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-phone">Phone Number</label>
+                                        <input type="number" id="reg-phone" required placeholder="e.g. 9876543210">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-atype">Account Category</label>
+                                        <select id="reg-atype" required>
+                                            <option value="" disabled selected>Select Account Type</option>
+                                            <option value="Saving">Saving</option>
+                                            <option value="Current">Current</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Fixed Deposit">Fixed Deposit</option>
+                                            <option value="Demat">Demat</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-pcard">PAN Card Number</label>
+                                        <input type="text" id="reg-pcard" required placeholder="e.g. ABCDE1234F" style="text-transform: uppercase;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reg-acard">Aadhar Card Number</label>
+                                        <input type="text" id="reg-acard" required placeholder="e.g. 123456789012">
+                                    </div>
+                                    <div class="form-group grid-span-2">
+                                        <label for="reg-balance">Opening Deposit Balance (INR)</label>
+                                        <input type="number" step="0.01" id="reg-balance" required placeholder="e.g. 50000.00">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="reset" class="btn btn-secondary">Clear Form</button>
+                                    <button type="submit" class="btn btn-primary">Create Account</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 4. STATEMENT VIEW -->
+                <section id="view-statement" class="tab-view">
+                    <div class="statement-controls no-print">
+                        <div class="card search-statement-card">
+                            <div class="card-header">
+                                <h2>Search & Generate Account Statement</h2>
+                                <p>Select a customer from the database to generate a high-fidelity bank report.</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-with-button">
+                                    <select id="statement-customer-select">
+                                        <option value="" disabled selected>Select Customer account...</option>
+                                        <!-- Dynamic options -->
+                                    </select>
+                                    <button class="btn btn-primary" id="btn-generate-statement">Generate Statement</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statement Render Card -->
+                    <div id="statement-output-container" class="statement-layout hidden-element">
+                        <div class="statement-card">
+                            <div class="statement-header">
+                                <div class="sbi-branding">
+                                    <div class="sbi-logo">
+                                        <div class="sbi-circle"></div>
+                                        <div class="sbi-line"></div>
+                                    </div>
+                                    <div class="sbi-title">
+                                        <h1>State Bank of India</h1>
+                                        <p>THE NATION BANKS ON US</p>
+                                    </div>
+                                </div>
+                                <div class="branch-info">
+                                    <p><strong>Branch:</strong> Model Town, Delhi</p>
+                                    <p><strong>Contact:</strong> 011-27479106</p>
+                                    <p><strong>Date:</strong> <span id="stmt-current-date">--</span></p>
+                                </div>
+                            </div>
+                            
+                            <hr class="sbi-divider">
+                            
+                            <h2 class="stmt-doc-title">ACCOUNT REPORT STATEMENT</h2>
+                            
+                            <div class="statement-details-grid">
+                                <div class="stmt-col">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Account Number:</span>
+                                        <span class="detail-value highlighted" id="stmt-accno">--</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Customer Name:</span>
+                                        <span class="detail-value" id="stmt-cname">--</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Residential Address:</span>
+                                        <span class="detail-value" id="stmt-addr">--</span>
+                                    </div>
+                                </div>
+                                <div class="stmt-col">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Account Category:</span>
+                                        <span class="detail-value" id="stmt-atype">--</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">PAN Card Number:</span>
+                                        <span class="detail-value" id="stmt-pcard">--</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Aadhar Number:</span>
+                                        <span class="detail-value" id="stmt-acard">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="statement-financial-summary">
+                                <div class="balance-title">TOTAL CURRENT BALANCE</div>
+                                <div class="balance-figure" id="stmt-balance">₹0.00</div>
+                                <div class="balance-words" id="stmt-balance-words">Rupees Zero Only</div>
+                            </div>
+                            
+                            <div class="statement-footer">
+                                <div class="disclaimer">
+                                    * This is a computer-generated statement of account created in Aura Bank Customer Management Database System. No signature is required.
+                                </div>
+                                <button class="btn btn-secondary no-print" onclick="window.print()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                    <span>Print Statement</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 5. DB CONFIG VIEW -->
+                <section id="view-settings" class="tab-view">
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h2>Database Engine Configuration</h2>
+                            <p>Aura Bank defaults to a local zero-configuration SQLite server. If you want to connect to a live MySQL production server, toggle the engine and supply credentials below.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="db-config-form">
+                                <div class="toggle-container">
+                                    <label class="toggle-option">
+                                        <input type="radio" name="db_type_toggle" value="sqlite" checked>
+                                        <div class="toggle-box">
+                                            <h3>SQLite Engine</h3>
+                                            <p>Zero-configuration local file system storage</p>
+                                        </div>
+                                    </label>
+                                    <label class="toggle-option">
+                                        <input type="radio" name="db_type_toggle" value="mysql">
+                                        <div class="toggle-box">
+                                            <h3>MySQL Database</h3>
+                                            <p>Scalable, multi-client relational engine</p>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div id="mysql-credentials-section" class="mysql-fields hidden-element">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="db-host">MySQL Server Host</label>
+                                            <input type="text" id="db-host" placeholder="e.g. localhost">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="db-user">Database User</label>
+                                            <input type="text" id="db-user" placeholder="e.g. root">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="db-passwd">Authentication Password</label>
+                                            <input type="password" id="db-passwd" placeholder="Enter password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="db-name">Schema/Database Name</label>
+                                            <input type="text" id="db-name" placeholder="e.g. Bank_Customers_Database">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" id="btn-test-connection">Test Connection</button>
+                                    <button type="submit" class="btn btn-primary">Apply & Save Connection</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <!-- Edit/Update Customer Modal -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Update Account Details</h2>
+                <button class="btn-close" id="btn-close-edit-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-customer-form">
+                    <input type="hidden" id="edit-accno">
+                    <div class="form-grid">
+                        <div class="form-group grid-span-2">
+                            <label>Account Number (read-only)</label>
+                            <input type="text" id="edit-accno-display" disabled class="disabled-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cname">Customer Full Name</label>
+                            <input type="text" id="edit-cname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="number" id="edit-phone" required>
+                        </div>
+                        <div class="form-group grid-span-2">
+                            <label for="edit-addr">Residential Address</label>
+                            <input type="text" id="edit-addr" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-atype">Account Type</label>
+                            <select id="edit-atype" required>
+                                <option value="Saving">Saving</option>
+                                <option value="Current">Current</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Fixed Deposit">Fixed Deposit</option>
+                                <option value="Demat">Demat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-pcard">PAN Card</label>
+                            <input type="text" id="edit-pcard" required style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-acard">Aadhar Number</label>
+                            <input type="text" id="edit-acard" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-balance">Account Balance (INR)</label>
+                            <input type="number" step="0.01" id="edit-balance" required>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-edit">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirm Deletion Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-card modal-confirm">
+            <div class="modal-body text-center">
+                <div class="warning-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <h2>Delete Customer Record?</h2>
+                <p>Are you sure you want to delete customer <strong id="delete-customer-name">--</strong> (Account: <strong id="delete-customer-acc">--</strong>)? This operation cannot be undone and will permanently wipe the record from the database.</p>
+                <div class="modal-actions justify-center">
+                    <button class="btn btn-secondary" id="btn-cancel-delete">Cancel</button>
+                    <button class="btn btn-danger" id="btn-confirm-delete">Yes, Delete Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript Logic -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
