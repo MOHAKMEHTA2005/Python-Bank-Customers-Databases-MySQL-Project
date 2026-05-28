@@ -3,8 +3,32 @@ import json
 import sqlite3
 import mysql.connector
 
-CONFIG_FILE = "db_config.json"
-SQLITE_DB = "bank.db"
+# Detect if running in Vercel's read-only environment
+IS_VERCEL = os.environ.get("VERCEL") == "1" or os.environ.get("VERCEL") is not None
+
+if IS_VERCEL:
+    CONFIG_FILE = "/tmp/db_config.json"
+    SQLITE_DB = "/tmp/bank.db"
+    
+    # Copy the pre-existing seed sqlite database to the writable /tmp directory if it hasn't been copied yet
+    if not os.path.exists(SQLITE_DB) and os.path.exists("bank.db"):
+        import shutil
+        try:
+            shutil.copy("bank.db", SQLITE_DB)
+            print("Successfully copied template bank.db to /tmp")
+        except Exception as e:
+            print(f"Error copying bank.db to /tmp: {e}")
+            
+    # Pre-create the default configuration in /tmp if not present
+    if not os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'w') as f:
+                json.dump({"type": "sqlite", "host": "localhost", "user": "root", "passwd": "", "database": "Bank_Customers_Database"}, f, indent=4)
+        except Exception as e:
+            print(f"Error creating default db_config.json in /tmp: {e}")
+else:
+    CONFIG_FILE = "db_config.json"
+    SQLITE_DB = "bank.db"
 
 def get_db_config():
     """Reads database configuration from local json file."""
